@@ -97,6 +97,13 @@ body {
   transform: translateY(-1px);
 }
 
+.row-hover {
+  transition: background 0.15s ease;
+}
+.row-hover:hover {
+  background: var(--bg-secondary) !important;
+}
+
 /* ── Apple-style Button ──────────────────────────────────────── */
 .btn-primary {
   display: inline-flex;

@@ -145,12 +145,10 @@ export default async function DashboardPage() {
                   <Link
                     key={r.id}
                     href={`/leave/${r.id}`}
-                    className="flex items-center gap-4 px-5 py-4 transition-colors"
+                    className="row-hover flex items-center gap-4 px-5 py-4"
                     style={{
                       borderBottom: i < recentRequests.length - 1 ? "1px solid var(--border)" : "none",
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "var(--bg-secondary)")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
                     <div
                       className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center"
