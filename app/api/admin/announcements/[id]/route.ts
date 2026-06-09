@@ -18,6 +18,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (body.title !== undefined) data.title = body.title;
   if (body.content !== undefined) data.content = body.content;
   if (body.isActive !== undefined) data.isActive = body.isActive;
+  if (body.requiresConfirmation !== undefined) data.requiresConfirmation = body.requiresConfirmation;
 
   const announcement = await prisma.announcement.update({ where: { id }, data });
   return NextResponse.json(announcement);

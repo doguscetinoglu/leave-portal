@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Navbar } from "@/components/portal/navbar";
 import { StatusBadge, leaveTypeLabel } from "@/components/portal/status-badge";
+import { AnnouncementConfirmModal } from "@/components/portal/announcement-confirm-modal";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
@@ -14,7 +15,7 @@ export default async function DashboardPage() {
   const userId = session.user.id;
   const year = new Date().getFullYear();
 
-  const [balances, recentRequests, announcements, activeRequest] = await Promise.all([
+  const [balances, recentRequests, announcements, activeRequest, unconfirmedAnnouncements] = await Promise.all([
     prisma.leaveBalance.findMany({ where: { userId, year } }),
     prisma.leaveRequest.findMany({
       where: { userId },
@@ -30,6 +31,15 @@ export default async function DashboardPage() {
       where: { userId, status: { in: ["PENDING", "IN_REVIEW"] } },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.announcement.findMany({
+      where: {
+        isActive: true,
+        requiresConfirmation: true,
+        reads: { none: { userId } },
+      },
+      orderBy: { createdAt: "asc" },
+      select: { id: true, title: true, content: true },
+    }),
   ]);
 
   const user = session.user as { id: string; name?: string | null; email?: string | null; role?: string };
@@ -42,6 +52,9 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-secondary)" }}>
       <Navbar user={user} />
+      {unconfirmedAnnouncements.length > 0 && (
+        <AnnouncementConfirmModal announcements={unconfirmedAnnouncements} />
+      )}
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6 fade-up">
         {/* Header */}

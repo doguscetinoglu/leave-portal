@@ -37,19 +37,20 @@ enum RequestStatus {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  name          String
-  password      String
-  role          Role           @default(EMPLOYEE)
-  department    String?
-  managerId     String?
-  manager       User?          @relation("ManagerEmployee", fields: [managerId], references: [id])
-  subordinates  User[]         @relation("ManagerEmployee")
-  leaveBalances LeaveBalance[]
-  leaveRequests LeaveRequest[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                String             @id @default(cuid())
+  email             String             @unique
+  name              String
+  password          String
+  role              Role               @default(EMPLOYEE)
+  department        String?
+  managerId         String?
+  manager           User?              @relation("ManagerEmployee", fields: [managerId], references: [id])
+  subordinates      User[]             @relation("ManagerEmployee")
+  leaveBalances     LeaveBalance[]
+  leaveRequests     LeaveRequest[]
+  announcementReads AnnouncementRead[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@schema("leave_portal")
 }
@@ -101,11 +102,25 @@ model StatusHistory {
 }
 
 model Announcement {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id                   String             @id @default(cuid())
+  title                String
+  content              String
+  isActive             Boolean            @default(true)
+  requiresConfirmation Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  reads                AnnouncementRead[]
 
+  @@schema("leave_portal")
+}
+
+model AnnouncementRead {
+  id             String       @id @default(cuid())
+  announcementId String
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readAt         DateTime     @default(now())
+
+  @@unique([announcementId, userId])
   @@schema("leave_portal")
 }

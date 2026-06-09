@@ -87,16 +87,19 @@ export function AnnouncementFormButton({
   id,
   defaultTitle = "",
   defaultContent = "",
+  defaultRequiresConfirmation = false,
 }: {
   mode: "create" | "edit";
   id?: string;
   defaultTitle?: string;
   defaultContent?: string;
+  defaultRequiresConfirmation?: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(defaultTitle);
   const [content, setContent] = useState(defaultContent);
+  const [requiresConfirmation, setRequiresConfirmation] = useState(defaultRequiresConfirmation);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -109,7 +112,7 @@ export function AnnouncementFormButton({
       {
         method: mode === "create" ? "POST" : "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, content, requiresConfirmation }),
       }
     );
     setLoading(false);
@@ -170,6 +173,26 @@ export function AnnouncementFormButton({
                     required
                   />
                 </div>
+
+                <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl transition-colors"
+                  style={{ background: requiresConfirmation ? "var(--warning-light)" : "var(--bg-secondary)" }}>
+                  <input
+                    type="checkbox"
+                    checked={requiresConfirmation}
+                    onChange={(e) => setRequiresConfirmation(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 flex-shrink-0"
+                    style={{ accentColor: "var(--warning)" }}
+                  />
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                      Okundu bilgisi iste
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>
+                      Aktif olduğunda kullanıcılar dashboard'a girişte bu duyuruyu okuyup onaylamak zorunda kalır.
+                    </p>
+                  </div>
+                </label>
+
                 {error && (
                   <p className="text-sm" style={{ color: "var(--error)" }}>{error}</p>
                 )}

@@ -19,9 +19,11 @@ export async function GET() {
 export async function POST(req: Request) {
   if (!await requireAdmin()) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
 
-  const { title, content } = await req.json();
+  const { title, content, requiresConfirmation } = await req.json();
   if (!title || !content) return NextResponse.json({ error: "Başlık ve içerik zorunlu" }, { status: 400 });
 
-  const announcement = await prisma.announcement.create({ data: { title, content } });
+  const announcement = await prisma.announcement.create({
+    data: { title, content, requiresConfirmation: !!requiresConfirmation },
+  });
   return NextResponse.json(announcement, { status: 201 });
 }
