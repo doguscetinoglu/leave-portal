@@ -19,7 +19,7 @@ export default function LoginPage() {
     const res = await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
     if (res?.error) setError("E-posta veya şifre hatalı.");
-    else router.push("/dashboard");
+    else router.push("/");
   }
 
   return (

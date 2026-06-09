@@ -7,6 +7,19 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const hashedPassword = await bcrypt.hash("123456", 10);
+  const adminPassword = await bcrypt.hash("admin123", 10);
+
+  await prisma.user.upsert({
+    where: { email: "admin@sirket.com" },
+    update: {},
+    create: {
+      email: "admin@sirket.com",
+      name: "HR Admin",
+      password: adminPassword,
+      role: "HR_ADMIN",
+      department: "İnsan Kaynakları",
+    },
+  });
 
   const manager = await prisma.user.upsert({
     where: { email: "yonetici@sirket.com" },
@@ -80,6 +93,7 @@ async function main() {
   });
 
   console.log("Seed tamamlandı:");
+  console.log("  HR Admin:  admin@sirket.com / admin123");
   console.log("  Yönetici: yonetici@sirket.com / 123456");
   console.log("  Çalışan 1: mehmet@sirket.com / 123456");
   console.log("  Çalışan 2: ayse@sirket.com / 123456");
