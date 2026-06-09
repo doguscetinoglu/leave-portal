@@ -40,7 +40,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
   const { id } = await params;
 
-  if (id === session.user.id) {
+  if (id === session?.user?.id) {
     return NextResponse.json({ error: "Kendi hesabınızı silemezsiniz" }, { status: 400 });
   }
 
