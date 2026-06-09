@@ -8,6 +8,7 @@ import {
   ToggleAnnouncementButton,
   DeleteAnnouncementButton,
 } from "@/components/admin/announcement-actions";
+import { AnnouncementReadersButton } from "@/components/admin/announcement-readers-button";
 
 export default async function AdminAnnouncementsPage() {
   const session = await auth();
@@ -69,10 +70,11 @@ export default async function AdminAnnouncementsPage() {
                     {format(new Date(a.createdAt), "d MMMM yyyy, HH:mm", { locale: tr })}
                   </p>
                   {a.requiresConfirmation && (
-                    <p className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
-                      <span style={{ color: "var(--success)" }}>{a._count.reads}</span>
-                      {" / "}{totalUsers} kullanıcı okudu
-                    </p>
+                    <AnnouncementReadersButton
+                      announcementId={a.id}
+                      readCount={a._count.reads}
+                      totalUsers={totalUsers}
+                    />
                   )}
                 </div>
               </div>
