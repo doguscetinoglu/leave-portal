@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["leave_portal"]
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  HR_ADMIN
+
+  @@schema("leave_portal")
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  ADMINISTRATIVE
+  MATERNITY
+  OTHER
+
+  @@schema("leave_portal")
+}
+
+enum RequestStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  CANCELLED
+
+  @@schema("leave_portal")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String
+  password      String
+  role          Role           @default(EMPLOYEE)
+  department    String?
+  managerId     String?
+  manager       User?          @relation("ManagerEmployee", fields: [managerId], references: [id])
+  subordinates  User[]         @relation("ManagerEmployee")
+  leaveBalances LeaveBalance[]
+  leaveRequests LeaveRequest[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@schema("leave_portal")
+}
+
+model LeaveBalance {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  year      Int
+  leaveType LeaveType
+  totalDays Int       @default(20)
+  usedDays  Int       @default(0)
+
+  @@unique([userId, year, leaveType])
+  @@schema("leave_portal")
+}
+
+model LeaveRequest {
+  id               String          @id @default(cuid())
+  userId           String
+  user             User            @relation(fields: [userId], references: [id])
+  leaveType        LeaveType
+  startDate        DateTime
+  endDate          DateTime
+  days             Int
+  address          String?
+  handoverPersonId String?
+  description      String?
+  status           RequestStatus   @default(PENDING)
+  logoFlowId       String?
+  logoFlowStatus   String?
+  statusHistory    StatusHistory[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@schema("leave_portal")
+}
+
+model StatusHistory {
+  id             String        @id @default(cuid())
+  leaveRequestId String
+  leaveRequest   LeaveRequest  @relation(fields: [leaveRequestId], references: [id])
+  status         RequestStatus
+  note           String?
+  changedBy      String?
+  createdAt      DateTime      @default(now())
+
+  @@schema("leave_portal")
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@schema("leave_portal")
+}
